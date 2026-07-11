@@ -1,3 +1,4 @@
+
 <!doctype html>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
@@ -175,10 +176,10 @@
   </div>
 
   <div class="grid2 small" style="margin-top:10px">
-    <label class="field"><span>配送方法</span>
+    <label class="field" id="shipSelField"><span>配送方法</span>
       <select id="shipSel" onchange="pickShip()"></select>
     </label>
-    <label class="field"><span>送料(円・修正可)</span>
+    <label class="field" id="shipField"><span>送料(円・手入力)</span>
       <input type="number" id="ship" inputmode="numeric" oninput="calc()">
     </label>
   </div>
@@ -264,7 +265,15 @@ function buildPresets(){
 }
 function pickShip(){
   const p = S.presets[Number($('shipSel').value)];
-  if(!p[0].startsWith('その他')) $('ship').value = p[1];
+  const isOther = p[0].startsWith('その他');
+  $('shipField').style.display = isOther ? 'block' : 'none';
+  $('shipSelField').style.gridColumn = isOther ? 'auto' : '1 / -1';
+  if(!isOther){
+    $('ship').value = p[1];
+  }else{
+    $('ship').value = '';
+    $('ship').focus();
+  }
   calc();
 }
 function clearInputs(){
@@ -361,7 +370,7 @@ async function load(){
   });
   buildPresets();
   setPf(S.platform||'mercari');
-  $('ship').value = S.presets[0][1];
+  pickShip();
 }
 load();
 </script>
